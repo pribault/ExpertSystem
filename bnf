@@ -1,0 +1,6 @@
+<expression>		<> <letter>
+<implie> :=			"=>" | "<=>"
+<operator> :=		'|' | '&' | '^'
+<not> :=			'!'
+<letter> :=			'A'..'Z'
+<whitespace> :=		{ ' ' | 9..13 }
