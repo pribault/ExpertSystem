@@ -1,4 +1,8 @@
-<expression>		<> <letter>
+
+<expression> :=		<whitespace> [ <not> ] <letter> <whitespace> <operator> <whitespace>
+					( [ <not> ] <letter> | <<expression> ) <whitespace> <implies>
+					<whitespace> [ <not> ] <letter> <whitespace> <operator> <whitespace>
+					( [ <not> ] <letter> | <<expression> )
 <implie> :=			"=>" | "<=>"
 <operator> :=		'|' | '&' | '^'
 <not> :=			'!'
