@@ -8,6 +8,8 @@ class	Node
 	public:
 		Node(const std::string &token, Node *a, Node *b);
 
+		void	deleteAll(void);
+
 		void			setParent(Node *parent);
 
 		typedef enum	e_res

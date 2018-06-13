@@ -10,6 +10,15 @@ Node::Node(const std::string &token, Node *a, Node *b) : _token(token)
 	_result = UNDEF;
 }
 
+void	Node::deleteAll(void)
+{
+	if (_a)
+		_a->deleteAll();
+	if (_b)
+		_b->deleteAll();
+	delete this;
+}
+
 void			Node::setParent(Node *parent)
 {
 	_parent = parent;

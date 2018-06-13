@@ -68,6 +68,14 @@ Node	*generate_rule(std::vector<std::string> &rpn)
 		log << "too much operands" << std::endl;
 		throw (std::exception());
 	}
+	log << "\"";
+	for (size_t i = 0; i < rpn.size(); i++)
+		if (i + 1 != rpn.size())
+			log << rpn.at(i) << " ";
+		else
+			log << rpn.at(i);
+	log << "\" converted to tree:" << std::endl;
+	stack.top()->debug(2);
 	return (stack.top());
 }
 
@@ -100,8 +108,7 @@ int		main(int argc, char **argv)
 			}
 			if (tree)
 			{
-				log << "tree debug" << std::endl;
-				tree->debug(0);
+				tree->deleteAll();
 			}
 			delete rpn;
 		}
