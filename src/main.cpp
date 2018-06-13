@@ -37,10 +37,26 @@ Node	*generate_rule(std::vector<std::string> &rpn)
 			stack.pop();
 			op1 = stack.top();
 			stack.pop();
-			stack.push(new Node(token, op1, op2));
+			try
+			{
+				stack.push(new Node(token, op1, op2));
+			}
+			catch (const std::exception &e)
+			{
+				throw (e);
+			}
 		}
 		else if (letters.rfind(token) != std::string::npos)
-			stack.push(new Node(token, NULL, NULL));
+		{
+			try
+			{
+				stack.push(new Node(token, NULL, NULL));
+			}
+			catch (const std::exception &e)
+			{
+				throw (e);
+			}
+		}
 		else
 		{
 			log << "invalid token '" << token << "'" << std::endl;
@@ -49,7 +65,7 @@ Node	*generate_rule(std::vector<std::string> &rpn)
 	}
 	if (stack.size() != 1)
 	{
-		log << "error generating rule x_x" << std::endl;
+		log << "too much operands" << std::endl;
 		throw (std::exception());
 	}
 	return (stack.top());
@@ -65,17 +81,29 @@ int		main(int argc, char **argv)
 		try
 		{
 			rpn = Shunting_Yard(std::string(argv[i]));
-			std::cout << "rpn:" << std::endl;
-			for (size_t i = 0; i < rpn->size(); i++)
-				std::cout << rpn->at(i) << " ";
-			std::cout << std::endl;
-			tree = generate_rule(*rpn);
-			tree->debug(0);
-			delete rpn;
 		}
 		catch (const std::exception &e)
 		{
 			log << "failed to convert to rpn" << std::endl;
+			rpn = NULL;
+		}
+		if (rpn)
+		{
+			try
+			{
+				tree = generate_rule(*rpn);
+			}
+			catch (const std::exception &e)
+			{
+				log << "failed to generate tree" << std::endl;
+				tree = NULL;
+			}
+			if (tree)
+			{
+				log << "tree debug" << std::endl;
+				tree->debug(0);
+			}
+			delete rpn;
 		}
 	}
 	return (0);

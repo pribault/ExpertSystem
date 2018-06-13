@@ -35,6 +35,7 @@ std::string		*get_token(const std::string &s, size_t &i)
 
 std::vector<std::string>	*Shunting_Yard(const std::string &s)
 {
+	static const std::string	whitespaces = " \a\b\t\n\v\f\r";
 	static const std::string	letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	static const std::string	operators = "|^&";
 	static const std::string	implies = "=>";
@@ -54,18 +55,12 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 
 	while ((token = get_token(s, i)))
 	{
-		log << "token: " << *token << std::endl;
-		log << "stack:" << std::endl;
-		for (size_t i = 0; i < stack.size(); i++)
-			log << "\t" << *(&stack.top() - i) << std::endl;
 		if (letters.rfind(*token) != std::string::npos)
 		{
-			log << *token << ": letter" << std::endl;
 			output->push_back(*token);
 		}
 		else if (operators.rfind(*token) != std::string::npos)
 		{
-			log << *token << ": operator" << std::endl;
 			while ((stack.size() && operators.rfind(stack.top()) != std::string::npos &&
 				operators.rfind(stack.top()) >= operators.rfind(*token)) && stack.top() != "(")
 			{
@@ -76,7 +71,6 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 		}
 		else if (*token == implies)
 		{
-			log << *token << ": implies" << std::endl;
 			while (stack.size() && stack.top() != "(")
 			{
 				output->push_back(stack.top());
@@ -85,13 +79,9 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 			stack.push(*token);
 		}
 		else if (*token == "(")
-		{
-			log << *token << ": bracket" << std::endl;
 			stack.push(*token);
-		}
 		else if (*token == ")")
 		{
-			log << *token << ": bracket" << std::endl;
 			while (stack.size() && stack.top() != "(")
 			{
 				output->push_back(stack.top());
@@ -105,6 +95,8 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 				throw (std::exception());
 			}
 		}
+		else if (whitespaces.rfind(*token) != std::string::npos)
+			;
 		else
 		{
 			log << "invalid token '" << *token << "'" << std::endl;
@@ -125,5 +117,12 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 			stack.pop();
 		}
 	}
+	log << "\"" << s << "\" converted to \"";
+	for (size_t i = 0; i < output->size(); i++)
+		if (i + 1 != output->size())
+			log << output->at(i) << " ";
+		else
+			log << output->at(i);
+	log << "\"" << std::endl;
 	return (output);
 }
