@@ -47,6 +47,11 @@ Node	*generate_rule(std::vector<std::string> &rpn)
 			throw (std::exception());
 		}
 	}
+	if (stack.size() != 1)
+	{
+		log << "error generating rule x_x" << std::endl;
+		throw (std::exception());
+	}
 	return (stack.top());
 }
 
