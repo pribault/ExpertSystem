@@ -18,9 +18,9 @@ OBJ_DIR =	.obj
 SRC_DIR =	src
 INC_DIR =	include
 
-SRC =	main.cpp Shunting_Yard.cpp
+SRC =	main.cpp Shunting_Yard.cpp Log.cpp Node.cpp
 OBJ =	$(sort $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC)))
-INC =	expert_system.hpp
+INC =	expert_system.hpp Log.hpp Node.hpp
 
 INCLUDES =	$(sort $(patsubst %.hpp, $(INC_DIR)/%.hpp, $(INC)))
 
@@ -38,7 +38,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCLUDES) Makefile | $(OBJ_DIR)
 	$(CC) -o $@ $(FLAGS) -I $(INC_DIR) -c $<
 
 clean:
-	rm -rf $(OBJ_DIR)
+	rm -rf $(OBJ_DIR) log
 
 fclean: clean
 	rm -f $(NAME)

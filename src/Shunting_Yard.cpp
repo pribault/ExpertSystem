@@ -1,36 +1,11 @@
 #include "expert_system.hpp"
 
-/*
-	while there are tokens to be read:
-		read a token.
-		if the token is a number, then:
-			push it to the output queue.
-		if the token is a function then:
-			push it onto the operator stack 
-		if the token is an operator, then:
-			while ((there is a function at the top of the operator stack)
-					or (there is an operator at the top of the operator stack with greater precedence)
-					or (the operator at the top of the operator stack has equal precedence and is left associative))
-					and (the operator at the top of the operator stack is not a left bracket):
-				pop operators from the operator stack onto the output queue.
-			push it onto the operator stack.
-		if the token is a left bracket (i.e. "("), then:
-			push it onto the operator stack.
-		if the token is a right bracket (i.e. ")"), then:
-			while the operator at the top of the operator stack is not a left bracket:
-				pop the operator from the operator stack onto the output queue.
-			pop the left bracket from the stack.
-	if there are no more tokens to read:
-		while there are still operator tokens on the stack:
-			pop the operator from the operator stack onto the output queue.
-	exit.
-*/
-
 std::string		*get_token(const std::string &s, size_t &i)
 {
 	static const std::string	families[] = {
+		"0123456789.",
 		"<=>",
-		" \a\b\t\n\v\f\r"
+		" \a\b\t\n\v\f\r",
 	};
 	size_t			family;
 	std::string		*token;
@@ -43,22 +18,112 @@ std::string		*get_token(const std::string &s, size_t &i)
 	}
 	catch (const std::exception &e)
 	{
-		std::cerr << e.what() << std::endl;
+		log << e.what() << std::endl;
 		return (NULL);
 	}
-	
+
+	for (family = 0; family < sizeof(families) / sizeof(std::string); family++)
+		if (families[family].find(s[i]) != std::string::npos)
+			break ;
+	token->push_back(s[i++]);
+	if (family < sizeof(families) / sizeof(std::string))
+		while (i < s.length() &&
+			families[family].find(s[i]) != std::string::npos)
+			token->push_back(s[i++]);
 	return (token);
 }
 
-std::stack<std::string>	Shunting_Yard(const std::string &s)
+std::vector<std::string>	*Shunting_Yard(const std::string &s)
 {
-	std::stack<std::string>	rpn;
-	std::string				*token;
-	size_t					i = 0;
+	static const std::string	letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	static const std::string	operators = "|^&";
+	static const std::string	implies = "=>";
+	std::vector<std::string>	*output;
+	std::stack<std::string>		stack;
+	std::string					*token;
+	size_t						i = 0;
+
+	try
+	{
+		output = new std::vector<std::string>();
+	}
+	catch (const std::exception &e)
+	{
+		throw (e);
+	}
 
 	while ((token = get_token(s, i)))
 	{
+		log << "token: " << *token << std::endl;
+		log << "stack:" << std::endl;
+		for (size_t i = 0; i < stack.size(); i++)
+			log << "\t" << *(&stack.top() - i) << std::endl;
+		if (letters.rfind(*token) != std::string::npos)
+		{
+			log << *token << ": letter" << std::endl;
+			output->push_back(*token);
+		}
+		else if (operators.rfind(*token) != std::string::npos)
+		{
+			log << *token << ": operator" << std::endl;
+			while ((stack.size() && operators.rfind(stack.top()) != std::string::npos &&
+				operators.rfind(stack.top()) >= operators.rfind(*token)) && stack.top() != "(")
+			{
+				output->push_back(stack.top());
+				stack.pop();
+			}
+			stack.push(*token);
+		}
+		else if (*token == implies)
+		{
+			log << *token << ": implies" << std::endl;
+			while (stack.size() && stack.top() != "(")
+			{
+				output->push_back(stack.top());
+				stack.pop();
+			}	
+			stack.push(*token);
+		}
+		else if (*token == "(")
+		{
+			log << *token << ": bracket" << std::endl;
+			stack.push(*token);
+		}
+		else if (*token == ")")
+		{
+			log << *token << ": bracket" << std::endl;
+			while (stack.size() && stack.top() != "(")
+			{
+				output->push_back(stack.top());
+				stack.pop();
+			}
+			if (stack.size())
+				stack.pop();
+			else
+			{
+				log << "parentheses mismatch" << std::endl;
+				throw (std::exception());
+			}
+		}
+		else
+		{
+			log << "invalid token '" << *token << "'" << std::endl;
+			throw (std::exception());
+		}
 		delete token;
 	}
-	return (rpn);
+	while (stack.size())
+	{
+		if (stack.top() == "(" || stack.top() == ")")
+		{
+			log << "parentheses mismatch" << std::endl;
+			throw (std::exception());
+		}
+		else
+		{
+			output->push_back(stack.top());
+			stack.pop();
+		}
+	}
+	return (output);
 }
