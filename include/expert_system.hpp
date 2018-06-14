@@ -9,4 +9,10 @@
 
 std::vector<std::string>	*Shunting_Yard(const std::string &s);
 
+typedef struct	s_state
+{
+	std::string	token;
+	Node::t_res	value;
+}				t_state;
+
 #endif

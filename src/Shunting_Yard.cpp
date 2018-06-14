@@ -2,12 +2,23 @@
 
 std::string		*get_token(const std::string &s, size_t &i)
 {
-	static const std::string	families[] = {
-		"0123456789.",
+	static const std::string	operators[] = {
 		"<=>",
-		" \a\b\t\n\v\f\r",
+		"=>",
+		"^",
+		"|",
+		"+",
+		"!",
+		"&"
 	};
-	size_t			family;
+
+	for (size_t j = 0; j < sizeof(operators) / sizeof(std::string); j++)
+		if (!s.compare(i, operators[j].size(), operators[j]))
+		{
+			i += operators[j].size();
+			return (new std::string(operators[j]));
+		}
+
 	std::string		*token;
 
 	if (i >= s.length())
@@ -21,15 +32,7 @@ std::string		*get_token(const std::string &s, size_t &i)
 		log << e.what() << std::endl;
 		return (NULL);
 	}
-
-	for (family = 0; family < sizeof(families) / sizeof(std::string); family++)
-		if (families[family].find(s[i]) != std::string::npos)
-			break ;
 	token->push_back(s[i++]);
-	if (family < sizeof(families) / sizeof(std::string))
-		while (i < s.length() &&
-			families[family].find(s[i]) != std::string::npos)
-			token->push_back(s[i++]);
 	return (token);
 }
 
@@ -37,12 +40,13 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 {
 	static const std::string	whitespaces = " \a\b\t\n\v\f\r";
 	static const std::string	letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	static const std::string	operators = "|^&";
+	static const std::string	operators = "<=>=>^|+!&";
 	static const std::string	implies = "=>";
 	std::vector<std::string>	*output;
 	std::stack<std::string>		stack;
 	std::string					*token;
 	size_t						i = 0;
+	size_t						count = 0;
 
 	try
 	{
@@ -71,6 +75,11 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 		}
 		else if (*token == implies)
 		{
+			if (count++)
+			{
+				log << "duplicated token '" << *token << "'" << std::endl;
+				throw (std::exception());
+			}
 			while (stack.size() && stack.top() != "(")
 			{
 				output->push_back(stack.top());
@@ -103,6 +112,11 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 			throw (std::exception());
 		}
 		delete token;
+	}
+	if (!count)
+	{
+		log << "no implie" << std::endl;
+		throw (std::exception());
 	}
 	while (stack.size())
 	{
