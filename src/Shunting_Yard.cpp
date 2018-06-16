@@ -8,8 +8,8 @@ std::string		*get_token(const std::string &s, size_t &i)
 		"^",
 		"|",
 		"+",
-		"!",
-		"&"
+		"&",
+		"!"
 	};
 
 	for (size_t j = 0; j < sizeof(operators) / sizeof(std::string); j++)
@@ -40,7 +40,7 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 {
 	static const std::string	whitespaces = " \a\b\t\n\v\f\r";
 	static const std::string	letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	static const std::string	operators = "<=>=>^|+!&";
+	static const std::string	operators = "<=>=>^|+&!";
 	static const std::string	implies = "=>";
 	static const std::string	iaoi = "<=>";
 	std::vector<std::string>	*output;
