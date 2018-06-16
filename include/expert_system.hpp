@@ -4,15 +4,9 @@
 # include "Log.hpp"
 # include "Node.hpp"
 # include <stack>
-# include <vector>
 # include <iostream>
 
 std::vector<std::string>	*Shunting_Yard(const std::string &s);
-
-typedef struct	s_state
-{
-	std::string	token;
-	Node::t_res	value;
-}				t_state;
+t_res						evaluate(std::vector<Node *> &rules, std::vector<t_state> &tokens, const std::string &token);
 
 #endif

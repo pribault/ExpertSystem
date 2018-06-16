@@ -100,7 +100,7 @@ int		main(int argc, char **argv)
 	for (char c = 'A'; c < 'Z'; c++)
 	{
 		line[0] = c;
-		tokens.push_back((t_state){line, Node::FALSE});
+		tokens.push_back((t_state){line, FALSE});
 	}
 	for (int i = 1; i < argc; i++)
 	{
@@ -113,64 +113,92 @@ int		main(int argc, char **argv)
 		else
 		{
 			for (size_t i = 0; i < tokens.size(); i++)
-				tokens[i].value = Node::FALSE;
+				tokens[i].value = FALSE;
 			while (std::getline(file, line))
 			{
-				switch (line[0])
+				if (line.length())
 				{
-					case '=':
+					switch (line[0])
 					{
-						for (size_t i = 1; i < line.length(); i++)
-							for (size_t j = 0; j < tokens.size(); j++)
-								if (line[i] == tokens[j].token[0])
-								{
-									log << line[i] << " set to true" << std::endl;
-									tokens[j].value = Node::TRUE;
-									break;
-								}
-						break;
-					}
-					case '?':
-					{
-						for (size_t i = 1; i < line.length(); i++)
-							for (size_t j = 0; j < tokens.size(); j++)
-								if (line[i] == tokens[j].token[0])
-								{
-									log << "searching for " << tokens[j].token << std::endl;
-									if (tokens[j].value == Node::TRUE)
+						case '=':
+						{
+							for (size_t i = 1; i < line.length(); i++)
+								for (size_t j = 0; j < tokens.size(); j++)
+									if (line[i] == tokens[j].token[0])
 									{
-										log << tokens[j].token << " is true" << std::endl;
-										std::cout << tokens[j].token << " is true" << std::endl;
+										log << line[i] << " set to true" << std::endl;
+										tokens[j].value = TRUE;
+										break;
 									}
-									break;
-								}
-						break;
-					}
-					default:
-					{
-						try
-						{
-							rule = Shunting_Yard(std::string(line));
+							break;
 						}
-						catch (const std::exception &e)
+						case '?':
 						{
-							log << "failed to convert to rpn" << std::endl;
-							rule = NULL;
+							for (size_t i = 1; i < line.length(); i++)
+								for (size_t j = 0; j < tokens.size(); j++)
+									if (line[i] == tokens[j].token[0])
+									{
+										log << "searching for " << tokens[j].token << std::endl;
+										if (tokens[j].value == TRUE)
+										{
+											log << tokens[j].token << " is true" << std::endl;
+											std::cout << tokens[j].token << " is true" << std::endl;
+										}
+										else
+										{
+											evaluate(rules, tokens, tokens[j].token);
+											switch (tokens[j].value)
+											{
+												case TRUE:
+												{
+													log << tokens[j].token << " is true" << std::endl;
+													std::cout << tokens[j].token << " is true" << std::endl;
+													break;
+												}
+												case FALSE:
+												{
+													log << tokens[j].token << " is false" << std::endl;
+													std::cout << tokens[j].token << " is false" << std::endl;
+													break;
+												}
+												case UNDEF:
+												{
+													log << tokens[j].token << " is undefined" << std::endl;
+													std::cout << tokens[j].token << " is undefined" << std::endl;
+													break;
+												}
+											}
+										}
+										break;
+									}
+							break;
 						}
-						if (rule)
+						default:
 						{
 							try
 							{
-								rules.push_back(generate_rule(*rule));
-								log << "rule " << rules.size() - 1 << " added" << std::endl;
+								rule = Shunting_Yard(std::string(line));
 							}
 							catch (const std::exception &e)
 							{
-								log << "failed to generate tree" << std::endl;
+								log << "failed to convert to rpn" << std::endl;
+								rule = NULL;
 							}
-							delete rule;
+							if (rule)
+							{
+								try
+								{
+									rules.push_back(generate_rule(*rule));
+									log << "rule " << rules.size() - 1 << " added" << std::endl;
+								}
+								catch (const std::exception &e)
+								{
+									log << "failed to generate tree" << std::endl;
+								}
+								delete rule;
+							}
+							break;
 						}
-						break;
 					}
 				}
 			}

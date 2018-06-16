@@ -42,6 +42,7 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 	static const std::string	letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	static const std::string	operators = "<=>=>^|+!&";
 	static const std::string	implies = "=>";
+	static const std::string	iaoi = "<=>";
 	std::vector<std::string>	*output;
 	std::stack<std::string>		stack;
 	std::string					*token;
@@ -65,26 +66,19 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 		}
 		else if (operators.rfind(*token) != std::string::npos)
 		{
+			if ((*token == implies || *token == iaoi) && count++)
+			{
+				log << "duplicated token '" << *token << "'" << std::endl;
+				delete token;
+				delete output;
+				throw (std::exception());
+			}
 			while ((stack.size() && operators.rfind(stack.top()) != std::string::npos &&
 				operators.rfind(stack.top()) >= operators.rfind(*token)) && stack.top() != "(")
 			{
 				output->push_back(stack.top());
 				stack.pop();
 			}
-			stack.push(*token);
-		}
-		else if (*token == implies)
-		{
-			if (count++)
-			{
-				log << "duplicated token '" << *token << "'" << std::endl;
-				throw (std::exception());
-			}
-			while (stack.size() && stack.top() != "(")
-			{
-				output->push_back(stack.top());
-				stack.pop();
-			}	
 			stack.push(*token);
 		}
 		else if (*token == "(")
@@ -101,6 +95,8 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 			else
 			{
 				log << "parentheses mismatch" << std::endl;
+				delete token;
+				delete output;
 				throw (std::exception());
 			}
 		}
@@ -109,6 +105,8 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 		else
 		{
 			log << "invalid token '" << *token << "'" << std::endl;
+			delete token;
+			delete output;
 			throw (std::exception());
 		}
 		delete token;
@@ -116,6 +114,7 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 	if (!count)
 	{
 		log << "no implie" << std::endl;
+		delete output;
 		throw (std::exception());
 	}
 	while (stack.size())

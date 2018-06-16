@@ -11,14 +11,14 @@
 # **************************************************************************** #
 
 NAME =	exper_system
-FLAGS =	-Wall -Wextra -Werror
+FLAGS =	-Wall -Wextra
 CC = clang++
 
 OBJ_DIR =	.obj
 SRC_DIR =	src
 INC_DIR =	include
 
-SRC =	main.cpp Shunting_Yard.cpp Log.cpp Node.cpp
+SRC =	main.cpp Shunting_Yard.cpp Log.cpp Node.cpp algo.cpp
 OBJ =	$(sort $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC)))
 INC =	expert_system.hpp Log.hpp Node.hpp
 
