@@ -6,7 +6,7 @@ Log::Log(const std::string &file)
 {
 	try
 	{
-		_file.open(file, std::ofstream::out | std::ofstream::app);
+		_file.open(file.c_str(), std::ofstream::out | std::ofstream::app);
 		_file << "___ Log start ___" << std::endl;
 	}
 	catch (const std::exception &e)
