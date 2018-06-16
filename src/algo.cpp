@@ -6,14 +6,7 @@ void		render_rule(Node *rule, std::vector<t_state> &tokens)
 	{
 		try
 		{
-			log << "a:" << rule->getA()->getToken() << " b:" << rule->getB()->getToken() << std::endl;
-			for (size_t j = 0; j < tokens.size(); j++)
-				if (tokens[j].token == "A")
-					log << tokens[j].token << " -> " << tokens[j].value << std::endl;
 			t_res	res = rule->getA()->render(tokens);
-			for (size_t j = 0; j < tokens.size(); j++)
-				if (tokens[j].token == "A")
-					log << tokens[j].token << " -> " << tokens[j].value << std::endl;
 			if (res == TRUE)
 				rule->getB()->setValues(tokens, res);
 
@@ -52,45 +45,61 @@ void		render_rule(Node *rule, std::vector<t_state> &tokens)
 
 t_res		evaluate(std::vector<Node *> &rules, std::vector<t_state> &tokens, const std::string &token)
 {
-	std::vector<std::string>	previous;
+	static std::vector<Node *>	previous;
 	t_res						res = UNDEF;
 	t_res						tmp;
+	bool						loop;
 
 	for (size_t j = 0; j < tokens.size(); j++)
-		if (tokens[j].token == "A")
-			log << tokens[j].token << " -> " << tokens[j].value << std::endl;
-	for (size_t i = 0; i < previous.size(); i++)
-		if (previous[i] == token)
-			throw (std::exception());
-	previous.push_back(token);
-	for (size_t i = 0; i < rules.size(); i++)
-		if (rules[i]->result(token))
+		if (tokens[j].token == token)
 		{
-			for (size_t j = 0; j < tokens.size(); j++)
-				if (rules[i]->need(tokens[j].token))
-				{
-					try
-					{
-						log << "needing " << tokens[j].token << std::endl;
-						tokens[j].value = evaluate(rules, tokens, tokens[j].token);
-						log << tokens[j].token << " is " << tokens[j].value << std::endl;
-					}
-					catch (const std::exception &e)
-					{
-						throw (e);
-					}
-				}
-			render_rule(rules[i], tokens);
-			for (size_t j = 0; j < tokens.size(); j++)
-				if (tokens[j].token == token)
-				{
-					tmp = tokens[j].value;
-					break;
-				}
-			if (tmp != res && res != UNDEF)
-				throw (std::exception());
-			res = tmp;
+			res = tokens[j].value;
+			break;
 		}
-	previous.pop_back();
+	for (size_t i = 0; i < rules.size(); i++)
+	{
+		loop = false;
+		for (size_t j = 0; j < previous.size(); j++)
+			if (rules[i] == previous[j])
+				loop = true;
+		if (loop == false)
+		{
+			previous.push_back(rules[i]);
+			if (rules[i]->result(token))
+			{
+				for (size_t j = 0; j < tokens.size(); j++)
+					if (rules[i]->need(tokens[j].token))
+					{
+						try
+						{
+							log << "[" << i << "] needing " << tokens[j].token << std::endl;
+							tokens[j].value = evaluate(rules, tokens, tokens[j].token);
+							log <<"[" << i << "] got " << tokens[j].value << std::endl;
+							log << tokens[j].token << " is " << tokens[j].value << std::endl;
+						}
+						catch (const std::exception &e)
+						{
+							log << "[" << i << "] cannot get " << token << std::endl;
+							// previous.pop_back();
+							// throw (e);
+						}
+					}
+				render_rule(rules[i], tokens);
+				for (size_t j = 0; j < tokens.size(); j++)
+					if (tokens[j].token == token)
+					{
+						tmp = tokens[j].value;
+						break;
+					}
+				if (tmp != res && res == TRUE)
+				{
+					previous.pop_back();
+					throw (std::exception());
+				}
+				res = tmp;
+			}
+			previous.pop_back();
+		}
+	}
 	return (res);
 }
