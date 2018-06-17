@@ -146,27 +146,35 @@ int		main(int argc, char **argv)
 										}
 										else
 										{
-											evaluate(rules, tokens, tokens[j].token);
-											switch (tokens[j].value)
+											try
 											{
-												case TRUE:
+												evaluate(rules, tokens, tokens[j].token);
+												switch (tokens[j].value)
 												{
-													log << tokens[j].token << " is true" << std::endl;
-													std::cout << tokens[j].token << " is true" << std::endl;
-													break;
+													case TRUE:
+													{
+														log << tokens[j].token << " is true" << std::endl;
+														std::cout << tokens[j].token << " is true" << std::endl;
+														break;
+													}
+													case FALSE:
+													{
+														log << tokens[j].token << " is false" << std::endl;
+														std::cout << tokens[j].token << " is false" << std::endl;
+														break;
+													}
+													case UNDEF:
+													{
+														log << tokens[j].token << " is undefined" << std::endl;
+														std::cout << tokens[j].token << " is undefined" << std::endl;
+														break;
+													}
 												}
-												case FALSE:
-												{
-													log << tokens[j].token << " is false" << std::endl;
-													std::cout << tokens[j].token << " is false" << std::endl;
-													break;
-												}
-												case UNDEF:
-												{
-													log << tokens[j].token << " is undefined" << std::endl;
-													std::cout << tokens[j].token << " is undefined" << std::endl;
-													break;
-												}
+											}
+											catch (const std::exception &e)
+											{
+												log << "error, cannot solve " << tokens[j].token << std::endl;
+												std::cout << "error, cannot solve " << tokens[j].token << std::endl;
 											}
 										}
 										break;
