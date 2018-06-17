@@ -7,7 +7,7 @@ void		render_rule(Node *rule, std::vector<t_state> &tokens)
 		try
 		{
 			t_res	res = rule->getA()->render(tokens);
-			if (res == TRUE)
+			if (res == TRUE || res == UNDEF)
 				rule->getB()->setValues(tokens, res);
 
 			log << "rule result: ";
@@ -41,7 +41,7 @@ void		render_rule(Node *rule, std::vector<t_state> &tokens)
 		try
 		{
 			t_res	res = rule->getA()->render(tokens);
-			if (res == TRUE)
+			if (res == TRUE || res == UNDEF)
 			{
 				rule->getB()->setValues(tokens, res);
 
@@ -71,7 +71,7 @@ void		render_rule(Node *rule, std::vector<t_state> &tokens)
 				try
 				{
 					t_res	res = rule->getB()->render(tokens);
-					if (res == TRUE)
+					if (res == TRUE || res == UNDEF)
 						rule->getA()->setValues(tokens, res);
 
 					log << "rule result: ";
