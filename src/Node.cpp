@@ -3,6 +3,8 @@
 #include <cstddef>
 #include <iostream>
 
+#define TABLE_SIZE	4
+
 Node::Node(const std::string &token, Node *a, Node *b) : _token(token)
 {
 	_parent = NULL;
@@ -47,75 +49,77 @@ Node			*Node::getB(void) const
 typedef struct	s_table
 {
 	std::string	op;
-	t_res		a[9];
-	t_res		b[9];
-	t_res		out[9];
+	t_res		a[TABLE_SIZE];
+	t_res		b[TABLE_SIZE];
+	t_res		out[TABLE_SIZE];
 }				t_table;
+
+static const t_table	tables[] = {
+	{"+",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{FALSE,	FALSE,	FALSE,	TRUE}
+	},
+	{"&",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{FALSE,	FALSE,	FALSE,	TRUE}
+	},
+	{"and",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{FALSE,	FALSE,	FALSE,	TRUE}
+	},
+	{"|",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{FALSE,	TRUE,	TRUE,	TRUE}
+	},
+	{"or",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{FALSE,	TRUE,	TRUE,	TRUE}
+	},
+	{"nand",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{TRUE,	TRUE,	TRUE,	FALSE}
+	},
+	{"nor",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{TRUE,	FALSE,	FALSE,	FALSE}
+	},
+	{"^",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{FALSE,	TRUE,	TRUE,	FALSE}
+	},
+	{"xor",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{FALSE,	TRUE,	TRUE,	FALSE}
+	},
+	{"xnor",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{TRUE,	FALSE,	FALSE,	TRUE}
+	},
+	{"!",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{TRUE,	TRUE,	FALSE,	FALSE}
+	},
+	{"not",
+		{FALSE,	FALSE,	TRUE,	TRUE},
+		{FALSE,	TRUE,	FALSE,	TRUE},
+		{TRUE,	TRUE,	FALSE,	FALSE}
+	}
+};
 
 t_res			Node::render(std::vector<t_state> &tokens) const
 {
-	static const t_table	tables[] = {
-		{"+",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{FALSE,	FALSE,	FALSE,	FALSE,	TRUE,	UNDEF,	FALSE,	UNDEF,	UNDEF}
-		},
-		{"&",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{FALSE,	FALSE,	FALSE,	FALSE,	TRUE,	UNDEF,	FALSE,	UNDEF,	UNDEF}
-		},
-		{"and",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{FALSE,	FALSE,	FALSE,	FALSE,	TRUE,	UNDEF,	FALSE,	UNDEF,	UNDEF}
-		},
-		{"|",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF}
-		},
-		{"or",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF}
-		},
-		{"nand",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{TRUE,	TRUE,	TRUE,	TRUE,	FALSE,	UNDEF,	TRUE,	UNDEF,	UNDEF}
-		},
-		{"nor",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{TRUE,	FALSE,	UNDEF,	FALSE,	FALSE,	FALSE,	UNDEF,	FALSE,	UNDEF}
-		},
-		{"^",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	TRUE,	FALSE,	UNDEF,	UNDEF,	UNDEF,	UNDEF}
-		},
-		{"xor",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	TRUE,	FALSE,	UNDEF,	UNDEF,	UNDEF,	UNDEF}
-		},
-		{"xnor",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{TRUE,	FALSE,	UNDEF,	FALSE,	TRUE,	UNDEF,	UNDEF,	UNDEF,	UNDEF}
-		},
-		{"!",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{TRUE,	TRUE,	TRUE,	FALSE,	FALSE,	FALSE,	UNDEF,	UNDEF,	UNDEF}
-		},
-		{"not",
-			{FALSE,	FALSE,	FALSE,	TRUE,	TRUE,	TRUE,	UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF,	FALSE,	TRUE,	UNDEF},
-			{TRUE,	TRUE,	TRUE,	FALSE,	FALSE,	FALSE,	UNDEF,	UNDEF,	UNDEF}
-		}
-	};
+	t_res	res = UNDEF;
 	t_res	a, b;
 
 	for (size_t op = 0; op < sizeof(tables) / sizeof(t_table); op++)
@@ -129,10 +133,15 @@ t_res			Node::render(std::vector<t_state> &tokens) const
 				b = _b->render(tokens);
 			else
 				b = UNDEF;
-			for (size_t i = 0; i < 9; i++)
-				if (a == tables[op].a[i] &&
-					b == tables[op].b[i])
-					return (tables[op].out[i]);
+			for (size_t i = 0; i < TABLE_SIZE; i++)
+				if ((a == tables[op].a[i] || a == UNDEF) &&
+					(b == tables[op].b[i] || b == UNDEF))
+				{
+					if (res != UNDEF && res != tables[op].out[i])
+						return (UNDEF);
+					res = tables[op].out[i];
+				}
+			return (res);
 		}
 	for (size_t i = 0; i < tokens.size(); i++)
 		if (_token == tokens[i].token)
@@ -162,80 +171,48 @@ bool			Node::need(const std::string &token) const
 
 void			Node::setValues(std::vector<t_state> &tokens, t_res value)
 {
-	static const t_table	tables[] = {
-		{"+",
-			{UNDEF,	TRUE,	UNDEF},
-			{UNDEF,	TRUE,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		},
-		{"&",
-			{UNDEF,	TRUE,	UNDEF},
-			{UNDEF,	TRUE,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		},
-		{"and",
-			{UNDEF,	TRUE,	UNDEF},
-			{UNDEF,	TRUE,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		},
-		{"|",
-			{FALSE,	UNDEF,	UNDEF},
-			{FALSE,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		},
-		{"or",
-			{FALSE,	UNDEF,	UNDEF},
-			{FALSE,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		},
-		{"nand",
-			{TRUE,	UNDEF,	UNDEF},
-			{TRUE,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		},
-		{"nor",
-			{UNDEF,	FALSE,	UNDEF},
-			{UNDEF,	FALSE,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		},
-		{"^",
-			{UNDEF,	UNDEF,	UNDEF},
-			{UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		},
-		{"xor",
-			{UNDEF,	UNDEF,	UNDEF},
-			{UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		},
-		{"xnor",
-			{UNDEF,	UNDEF,	UNDEF},
-			{UNDEF,	UNDEF,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		},
-		{"!",
-			{TRUE,	FALSE,	UNDEF},
-			{TRUE,	FALSE,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		},
-		{"not",
-			{TRUE,	FALSE,	UNDEF},
-			{TRUE,	FALSE,	UNDEF},
-			{FALSE,	TRUE,	UNDEF}
-		}
-	};
+	t_res	a = UNDEF;
+	t_res	b = UNDEF;
 
 	for (size_t op = 0; op < sizeof(tables) / sizeof(t_table); op++)
 		if (tables[op].op == _token)
-			for (size_t i = 0; i < 3; i++)
-				if (value == tables[op].out[i])
+		{
+			for (size_t i = 0; i < TABLE_SIZE; i++)
+				if (value == tables[op].out[i] || value == UNDEF)
 				{
-					if (_a)
-						_a->setValues(tokens, tables[op].a[i]);
-					if (_b)
-						_b->setValues(tokens, tables[op].b[i]);
-					return ;
+					if (a != tables[op].a[i])
+					{
+						if (a == UNDEF)
+							a = tables[op].a[i];
+						else
+						{
+							if (_a)
+								_a->setValues(tokens, UNDEF);
+							if (_b)
+								_b->setValues(tokens, UNDEF);
+							return ;
+						}
+					}
+					if (b != tables[op].b[i])
+					{
+						if (b == UNDEF)
+							b = tables[op].b[i];
+						else
+						{
+							if (_a)
+								_a->setValues(tokens, UNDEF);
+							if (_b)
+								_b->setValues(tokens, UNDEF);
+							return ;
+						}
+					}
 				}
+			if (_a)
+				_a->setValues(tokens, a);
+			if (_b)
+				_b->setValues(tokens, b);
+			return ;
+		}
 	for (size_t i = 0; i < tokens.size(); i++)
 		if (_token == tokens[i].token)
 		{
