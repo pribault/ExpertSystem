@@ -2,7 +2,7 @@
 
 void		render_rule(Node *rule, std::vector<t_state> &tokens)
 {
-	if (rule->getToken() == "=>")
+	if (rule->getToken() == "=>" || rule->getToken() == "then")
 	{
 		try
 		{
@@ -36,7 +36,7 @@ void		render_rule(Node *rule, std::vector<t_state> &tokens)
 			log << e.what() << std::endl;
 		}
 	}
-	else if (rule->getToken() == "<=>")
+	else if (rule->getToken() == "<=>" || rule->getToken() == "ifandonlyif")
 	{
 		try
 		{

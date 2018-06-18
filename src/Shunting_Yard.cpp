@@ -4,12 +4,21 @@ std::string		*get_token(const std::string &s, size_t &i)
 {
 	static const std::string	operators[] = {
 		"<=>",
+		"ifandonlyif",
 		"=>",
+		"then",
+		"xnor",
 		"^",
+		"xor",
+		"nor",
+		"nand",
 		"|",
+		"or",
 		"+",
 		"&",
-		"!"
+		"and",
+		"!",
+		"not",
 	};
 
 	for (size_t j = 0; j < sizeof(operators) / sizeof(std::string); j++)
@@ -40,9 +49,7 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 {
 	static const std::string	whitespaces = " \a\b\t\n\v\f\r";
 	static const std::string	letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	static const std::string	operators = "<=>=>^|+&!";
-	static const std::string	implies = "=>";
-	static const std::string	iaoi = "<=>";
+	static const std::string	operators = "<=>ifandonlyif=>then^xnorxornornand|or+&and!not";
 	std::vector<std::string>	*output;
 	std::stack<std::string>		stack;
 	std::string					*token;
@@ -66,7 +73,9 @@ std::vector<std::string>	*Shunting_Yard(const std::string &s)
 		}
 		else if (operators.rfind(*token) != std::string::npos)
 		{
-			if ((*token == implies || *token == iaoi) && count++)
+			if ((*token == "=>" || *token == "then" ||
+				*token == "<=>" || *token == "ifandonlyif") &&
+				count++)
 			{
 				log << "duplicated token '" << *token << "'" << std::endl;
 				delete token;

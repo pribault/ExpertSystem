@@ -15,8 +15,7 @@
 Node	*generate_rule(std::vector<std::string> &rpn)
 {
 	static const std::string	letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	static const std::string	operators = "<=>=>^|+!&";
-	static const std::string	implies = "=>";
+	static const std::string	operators = "<=>ifandonlyif=>then^xnorxornornand|or+&and!not";
 	std::stack<Node *>			stack;
 	std::string					token;
 	Node						*op1;
@@ -25,8 +24,7 @@ Node	*generate_rule(std::vector<std::string> &rpn)
 	for (size_t i = 0; i < rpn.size(); i++)
 	{
 		token = rpn[i];
-		if (operators.rfind(token) != std::string::npos ||
-			token == implies)
+		if (operators.rfind(token) != std::string::npos)
 		{
 			if (token == "!" && stack.size() >= 1)
 			{
