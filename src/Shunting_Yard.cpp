@@ -30,7 +30,7 @@ std::string		*get_token(const std::string &s, size_t &i)
 
 	std::string		*token;
 
-	if (i >= s.length())
+	if (i >= s.length() || s[i] == '#')
 		return (NULL);
 	try
 	{

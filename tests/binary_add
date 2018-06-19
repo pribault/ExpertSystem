@@ -1,0 +1,14 @@
+A & E					=>	I
+B & F | F & I | I & B	=>	J
+C & G | G & J | J & C	=>	K
+
+A ^ E		=>	L
+B ^ F ^ I	=>	M
+C ^ G ^ J	=>	N
+D ^ H ^ K	=>	O
+
+#	ABCD first input
+#	EFGH second input
+
+=AEF
+?LMNO
